@@ -1,7 +1,12 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 
 void main() {
-  runApp(const MainApp());
+  runZonedGuarded(
+    () => runApp(const MainApp()),
+    (error, stack) {},
+  );
 }
 
 class MainApp extends StatelessWidget {
