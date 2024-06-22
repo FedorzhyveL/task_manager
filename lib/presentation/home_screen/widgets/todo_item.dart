@@ -26,7 +26,13 @@ class _ToDoListItem extends StatelessWidget {
           color: Colors.white,
         ),
       ),
-      onDismissed: (direction) => null,
+      onDismissed: (direction) {
+        if (direction == DismissDirection.startToEnd) {
+          logger.d('task completed');
+        } else if (direction == DismissDirection.endToStart) {
+          logger.d('task deleted');
+        }
+      },
       child: Padding(
         padding: const EdgeInsets.symmetric(
           horizontal: 16,

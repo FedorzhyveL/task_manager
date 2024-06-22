@@ -3,8 +3,13 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart';
+import 'package:logger/logger.dart';
 import 'package:task_manager/presentation/home_screen/home_screen.dart';
 
+final logger = Logger(
+  printer: PrettyPrinter(),
+  filter: null,
+);
 void main() {
   Intl.defaultLocale = 'ru';
   runZonedGuarded(
