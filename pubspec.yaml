@@ -7,20 +7,33 @@ environment:
   sdk: '>=3.3.4 <4.0.0'
 
 dependencies:
+  bloc: ^8.1.4
+  dio: ^5.4.3+1
   flutter:
     sdk: flutter
+  flutter_bloc: ^8.1.6
   flutter_launcher_icons: ^0.13.1
   flutter_localizations:
     sdk: flutter
-  intl: ^0.18.0
+  get_it: ^7.7.0
+  intl: ^0.19.0
+  json_annotation: ^4.9.0
   logger: ^2.3.0
+  meta: ^1.11.0
+  retrofit: ^4.1.0
+  shared_preferences: ^2.2.3
+  uuid: ^4.4.0
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^3.0.0
+  retrofit_generator: ^8.1.0 
+  build_runner: ^2.4.9
+  json_serializable: ^6.8.0
 
 flutter:
   uses-material-design: true
+  generate: true
 
 

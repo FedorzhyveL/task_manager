@@ -22,9 +22,9 @@ class _TodoDatePicker extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text(
-                'Сделать до',
-                style: TextStyle(
+              Text(
+                AppLocalizations.of(context)!.chooseDeadline,
+                style: const TextStyle(
                   fontWeight: FontWeight.w400,
                   fontSize: 16,
                   height: 1.17,
@@ -50,7 +50,7 @@ class _TodoDatePicker extends StatelessWidget {
                 inactiveThumbColor: Colors.white,
                 activeColor: const Color.fromARGB(255, 0, 122, 255),
                 inactiveTrackColor: const Color.fromRGBO(0, 0, 0, 0.06),
-                trackOutlineColor: MaterialStateProperty.resolveWith(
+                trackOutlineColor: WidgetStateProperty.resolveWith(
                   (states) => const Color(0xFFF7F6F2),
                 ),
                 onChanged: (value) async {

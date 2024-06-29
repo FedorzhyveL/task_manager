@@ -15,9 +15,9 @@ class _PrioritySelection extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         children: [
-          const Text(
-            'Важность',
-            style: TextStyle(
+          Text(
+            AppLocalizations.of(context)!.priority,
+            style: const TextStyle(
               fontWeight: FontWeight.w400,
               fontSize: 16,
               height: 1.17,
@@ -37,9 +37,9 @@ class _PrioritySelection extends StatelessWidget {
             ),
             selectedItemBuilder: (context) {
               return [
-                const Text('Нет'),
-                const Text('Низкий'),
-                const Text('!! Высокий'),
+                Text(AppLocalizations.of(context)!.lowPriority),
+                Text(AppLocalizations.of(context)!.basicPriority),
+                Text(AppLocalizations.of(context)!.importantPriority),
               ];
             },
             dropdownColor: Colors.white,
@@ -48,12 +48,12 @@ class _PrioritySelection extends StatelessWidget {
                 onChanged(value);
               }
             },
-            items: const [
+            items: [
               DropdownMenuItem(
                 value: 'Нет',
                 child: Text(
-                  'Нет',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.lowPriority,
+                  style: const TextStyle(
                     fontWeight: FontWeight.w400,
                     fontSize: 14,
                     height: 1,
@@ -64,8 +64,8 @@ class _PrioritySelection extends StatelessWidget {
               DropdownMenuItem(
                 value: 'Низкий',
                 child: Text(
-                  'Низкий',
-                  style: TextStyle(
+                  AppLocalizations.of(context)!.basicPriority,
+                  style: const TextStyle(
                     fontWeight: FontWeight.w400,
                     fontSize: 14,
                     height: 1,
@@ -74,8 +74,8 @@ class _PrioritySelection extends StatelessWidget {
                 ),
               ),
               DropdownMenuItem(
-                value: '!! Высокий',
-                child: Text(
+                value: AppLocalizations.of(context)!.importantPriority,
+                child: const Text(
                   '!! Высокий',
                   style: TextStyle(
                     fontWeight: FontWeight.w400,

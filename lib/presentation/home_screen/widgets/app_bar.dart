@@ -49,9 +49,9 @@ class _HomeAppBar extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text(
-                    'Мои дела',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.myTasks,
+                    style: const TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 32,
                       color: Colors.black,
@@ -75,9 +75,9 @@ class _HomeAppBar extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Мои дела',
-                    style: TextStyle(
+                  Text(
+                    AppLocalizations.of(context)!.myTasks,
+                    style: const TextStyle(
                       fontWeight: FontWeight.w500,
                       fontSize: 32,
                       color: Colors.black,
@@ -87,14 +87,18 @@ class _HomeAppBar extends StatelessWidget {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text(
-                        'Выполненно — $doneTasksAmount',
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w400,
-                          fontSize: 16,
-                          color: Color.fromRGBO(0, 0, 0, 0.3),
-                          height: 1.25,
-                        ),
+                      BlocBuilder<HomeBloc, HomeState>(
+                        builder: (context, state) {
+                          return Text(
+                            AppLocalizations.of(context)!.completedTasks(state.doneTasks.length),
+                            style: const TextStyle(
+                              fontWeight: FontWeight.w400,
+                              fontSize: 16,
+                              color: Color.fromRGBO(0, 0, 0, 0.3),
+                              height: 1.25,
+                            ),
+                          );
+                        },
                       ),
                       Padding(
                         padding: const EdgeInsets.only(right: 16),

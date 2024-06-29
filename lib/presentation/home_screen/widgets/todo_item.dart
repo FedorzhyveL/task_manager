@@ -28,9 +28,19 @@ class _ToDoListItem extends StatelessWidget {
       ),
       onDismissed: (direction) {
         if (direction == DismissDirection.startToEnd) {
-          logger.d('task completed');
+          context.read<HomeBloc>().add(
+                EditTaskEvent(
+                  task: todoTask.copyWith(done: !todoTask.done),
+                ),
+              );
+          logger.i('task completed');
         } else if (direction == DismissDirection.endToStart) {
-          logger.d('task deleted');
+          context.read<HomeBloc>().add(
+                DeleteTaskEvent(
+                  task: todoTask.copyWith(done: !todoTask.done),
+                ),
+              );
+          logger.i('task deleted');
         }
       },
       child: Padding(
@@ -63,21 +73,27 @@ class _CheckBox extends StatelessWidget {
       width: 24,
       height: 24,
       child: Checkbox(
-        fillColor: todoTask.taskPriority == TodoTaskPriority.high
-            ? MaterialStateProperty.resolveWith(
-                (states) => states.contains(MaterialState.selected)
+        fillColor: todoTask.importance == Importance.important
+            ? WidgetStateProperty.resolveWith(
+                (states) => states.contains(WidgetState.selected)
                     ? const Color.fromRGBO(244, 67, 54, 1)
                     : const Color.fromRGBO(244, 67, 54, 0.16),
               )
-            : MaterialStateProperty.resolveWith(
-                (states) => states.contains(MaterialState.selected) ? const Color.fromRGBO(52, 199, 89, 1) : null,
+            : WidgetStateProperty.resolveWith(
+                (states) => states.contains(WidgetState.selected) ? const Color.fromRGBO(52, 199, 89, 1) : null,
               ),
         side: BorderSide(
           width: 2,
-          color: todoTask.taskPriority == TodoTaskPriority.high ? Colors.red : const Color.fromRGBO(0, 0, 0, 0.2),
+          color: todoTask.importance == Importance.important ? Colors.red : const Color.fromRGBO(0, 0, 0, 0.2),
         ),
         value: todoTask.done,
-        onChanged: (_) {},
+        onChanged: (value) {
+          context.read<HomeBloc>().add(
+                EditTaskEvent(
+                  task: todoTask.copyWith(done: value),
+                ),
+              );
+        },
       ),
     );
   }
@@ -104,14 +120,14 @@ class _TodoItemInfo extends StatelessWidget {
                 color: Colors.black,
               ),
               children: [
-                if (todoTask.taskPriority == TodoTaskPriority.high)
+                if (todoTask.importance == Importance.important)
                   const WidgetSpan(
                     child: Icon(
                       Icons.priority_high_rounded,
                       color: Color.fromRGBO(255, 59, 48, 1),
                     ),
                   ),
-                if (todoTask.taskPriority == TodoTaskPriority.low)
+                if (todoTask.importance == Importance.basic)
                   const WidgetSpan(
                     child: Icon(
                       Icons.arrow_downward_rounded,
@@ -119,15 +135,15 @@ class _TodoItemInfo extends StatelessWidget {
                     ),
                   ),
                 TextSpan(
-                  text: todoTask.taskInfo,
+                  text: todoTask.text,
                   style: TextStyle(decoration: todoTask.done ? TextDecoration.lineThrough : null),
                 ),
               ],
             ),
           ),
-          if (todoTask.taskDeadline != null)
+          if (todoTask.deadline != null)
             Text(
-              DateFormat('d MMMM yyyy').format(todoTask.taskDeadline!),
+              DateFormat('d MMMM yyyy').format(todoTask.deadline!),
               style: const TextStyle(
                 fontWeight: FontWeight.w400,
                 fontSize: 14,
@@ -150,7 +166,8 @@ class _TodoInfoButton extends StatelessWidget {
     return InkWell(
       onTap: () => Navigator.of(context).push(
         MaterialPageRoute(
-          builder: (context) => TaskScreen(
+          builder: (newContext) => TaskScreen(
+            homeBloc: context.read<HomeBloc>(),
             todoTask: todoTask,
           ),
         ),
