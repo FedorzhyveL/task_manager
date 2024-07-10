@@ -1,3 +1,4 @@
+import 'package:auto_route/auto_route.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -5,20 +6,20 @@ import 'package:intl/intl.dart';
 
 import 'package:task_manager/domain/models/todo_task_model.dart';
 import 'package:task_manager/presentation/home_screen/bloc/home_bloc.dart';
+import 'package:task_manager/presentation/navigation/app_router.dart';
 
 part 'widgets/date_picker.dart';
 part 'widgets/delete_module.dart';
 part 'widgets/priority_selection.dart';
 part 'widgets/text_field.dart';
 
+@RoutePage()
 class TaskScreen extends StatefulWidget {
   const TaskScreen({
     super.key,
     this.todoTask,
-    required this.homeBloc,
   });
   final TodoTaskModel? todoTask;
-  final HomeBloc homeBloc;
   @override
   State<TaskScreen> createState() => _TaskScreenState();
 }
@@ -31,6 +32,8 @@ class _TaskScreenState extends State<TaskScreen> {
     const TextEditingValue(text: ''),
   );
 
+  late final HomeBloc homeBloc;
+
   @override
   void initState() {
     super.initState();
@@ -40,6 +43,7 @@ class _TaskScreenState extends State<TaskScreen> {
       switchValue = widget.todoTask!.deadline != null;
       taskDeadline = widget.todoTask!.deadline;
     }
+    homeBloc = context.read<HomeBloc>();
   }
 
   @override
@@ -50,37 +54,41 @@ class _TaskScreenState extends State<TaskScreen> {
         backgroundColor: const Color(0xFFF7F6F2),
         automaticallyImplyLeading: false,
         leading: IconButton(
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            if (context.router.canPop()) {
+              context.router.maybePop();
+            } else {
+              context.router.replace(const HomeRoute());
+            }
+          },
           icon: const Icon(
             Icons.close_rounded,
           ),
         ),
         actions: [
           TextButton(
-            onPressed: widget.homeBloc.state is! HomeLoading
-                ? widget.todoTask == null
-                    ? () {
-                        widget.homeBloc.add(
-                          CreateTaskEvent(
-                            text: textEditingController.text,
-                            importance: Importance.fromString(dropdownValue),
-                            deadline: taskDeadline,
-                          ),
-                        );
-                      }
-                    : () {
-                        widget.homeBloc.add(
-                          EditTaskEvent(
-                            task: widget.todoTask!.copyWith(
-                              text: textEditingController.text,
-                              importance: Importance.fromString(dropdownValue),
-                              deadline: taskDeadline,
-                              changeDeadline: true,
-                            ),
-                          ),
-                        );
-                      }
-                : null,
+            onPressed: widget.todoTask == null
+                ? () {
+                    homeBloc.add(
+                      CreateTaskEvent(
+                        text: textEditingController.text,
+                        importance: Importance.fromString(dropdownValue),
+                        deadline: taskDeadline,
+                      ),
+                    );
+                  }
+                : () {
+                    homeBloc.add(
+                      EditTaskEvent(
+                        task: widget.todoTask!.copyWith(
+                          text: textEditingController.text,
+                          importance: Importance.fromString(dropdownValue),
+                          deadline: taskDeadline,
+                          changeDeadline: true,
+                        ),
+                      ),
+                    );
+                  },
             child: Text(
               AppLocalizations.of(context)!.saveTask,
               style: const TextStyle(
@@ -96,9 +104,14 @@ class _TaskScreenState extends State<TaskScreen> {
         ],
       ),
       body: BlocConsumer(
-        bloc: widget.homeBloc,
-        listenWhen: (previous, current) => previous is HomeLoading && current is HomeLoaded,
-        listener: (context, state) => Navigator.of(context).pop(),
+        bloc: homeBloc,
+        listener: (context, state) {
+          if (context.router.canPop()) {
+            context.router.maybePop();
+          } else {
+            context.router.replace(const HomeRoute());
+          }
+        },
         builder: (context, state) => ListView(
           children: [
             const SizedBox(height: 8),
@@ -153,7 +166,7 @@ class _TaskScreenState extends State<TaskScreen> {
             _DeleteModule(
               isEditMode: widget.todoTask == null,
               onDelete: widget.todoTask != null
-                  ? () => widget.homeBloc.add(
+                  ? () => homeBloc.add(
                         DeleteTaskEvent(task: widget.todoTask!),
                       )
                   : null,

@@ -44,7 +44,19 @@ State-Management
 - [x] Интернационализация: используется пакет intl или аналогичный, строки изолированы и не захардкожены
 
 
-APK (Alan Turing) https://drive.google.com/file/d/1S8yVY3AzZXHQN0epM3uQdmP3ztKY3Afh/view?usp=sharing
+Третья часть работы Bjarne Stroustrup
+
+Добавлено игнорирование серверных ошибок и информирование пользователя о наличии или отсутствии интернет подключения
+Приложение работает без интернета
+Реализован DI с помощью get_it
+Навигация переписана на auto_route, есть поддержка диплинков
+
+Приложение можно открыть через блокнот по ссылке https://todo.app.com
+Для открытия страницы добавления заадчи используй ссылку https://todo.app.com/task
+
+Добавлено пару unit тестов
+
+APK (Alan Turing) [https://drive.google.com/file/d/1S8yVY3AzZXHQN0epM3uQdmP3ztKY3Afh/view?usp=sharing](https://drive.google.com/file/d/12lymWyxAfR4XduOswWI4Eew6Qcl0I6SJ/view?usp=sharing)
 
 ![image](https://github.com/FedorzhyveL/task_manager/assets/61901905/f62f5e37-fc48-4b50-bdad-0ba0cd0dcf37)
 ![image](https://github.com/FedorzhyveL/task_manager/assets/61901905/7909602b-b0cd-4161-80cc-9b4cda285c5c)

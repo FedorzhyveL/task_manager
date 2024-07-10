@@ -164,14 +164,7 @@ class _TodoInfoButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (newContext) => TaskScreen(
-            homeBloc: context.read<HomeBloc>(),
-            todoTask: todoTask,
-          ),
-        ),
-      ),
+      onTap: () => context.router.push(TaskRoute(todoTask: todoTask)),
       child: Icon(
         Icons.info_outline_rounded,
         color: Colors.black.withOpacity(0.3),

@@ -1,3 +1,5 @@
+import 'package:auto_route/auto_route.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -5,20 +7,15 @@ import 'package:intl/intl.dart';
 
 import 'package:task_manager/core/di.dart';
 import 'package:task_manager/domain/models/todo_task_model.dart';
-import 'package:task_manager/domain/use_cases/create_task_use_case.dart';
-import 'package:task_manager/domain/use_cases/delete_task_use_caase.dart';
-import 'package:task_manager/domain/use_cases/edit_task_use_case.dart';
-import 'package:task_manager/domain/use_cases/get_task_use_case.dart';
-import 'package:task_manager/domain/use_cases/get_tasks_use_case.dart';
-import 'package:task_manager/domain/use_cases/update_tasks_use_case.dart';
 import 'package:task_manager/main.dart';
 import 'package:task_manager/presentation/home_screen/bloc/home_bloc.dart';
-import 'package:task_manager/presentation/task_screen/task_screen.dart';
+import 'package:task_manager/presentation/navigation/app_router.dart';
 
 part 'widgets/app_bar.dart';
 part 'widgets/todo_item.dart';
 part 'widgets/todo_list.dart';
 
+@RoutePage()
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -32,18 +29,12 @@ class _HomeScreenState extends State<HomeScreen> {
   final _scrollController = ScrollController();
   bool showStaticAppBar = false;
   late final HomeBloc _homeBloc;
+  late final Connectivity connectivity;
 
   @override
   void initState() {
     super.initState();
-    _homeBloc = HomeBloc(
-      injector.get<GetTasksUseCase>(),
-      injector.get<GetTaskUseCase>(),
-      injector.get<UpdateTasksUseCase>(),
-      injector.get<CreateTaskUseCase>(),
-      injector.get<EditTaskUseCase>(),
-      injector.get<DeleteTaskUseCase>(),
-    );
+
     _scrollController.addListener(() {
       if (_scrollController.offset >= (15 + kToolbarHeight) && showStaticAppBar == false) {
         setState(() {
@@ -55,6 +46,34 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     });
+
+    _homeBloc = context.read<HomeBloc>();
+
+    connectivity = injector.get<Connectivity>();
+    connectivity.onConnectivityChanged.listen(
+      (connectivityEvent) {
+        if (connectivityEvent.contains(ConnectivityResult.ethernet) ||
+            connectivityEvent.contains(ConnectivityResult.wifi) ||
+            connectivityEvent.contains(ConnectivityResult.mobile)) {
+          _homeBloc.add(UpdateTasksEvent());
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            backgroundColor: Colors.white,
+            content: Text(
+              'Интернет соединение установлено',
+              style: TextStyle(color: Colors.black),
+            ),
+          ));
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(const SnackBar(
+            backgroundColor: Colors.white,
+            content: Text(
+              'Интернет соединение не установлено',
+              style: TextStyle(color: Colors.black),
+            ),
+          ));
+        }
+      },
+    );
   }
 
   @override
@@ -64,13 +83,7 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Scaffold(
         backgroundColor: const Color(0xFFF7F6F2),
         floatingActionButton: InkWell(
-          onTap: () => Navigator.of(context).push<Map<String, dynamic>?>(
-            MaterialPageRoute(
-              builder: (context) => TaskScreen(
-                homeBloc: _homeBloc,
-              ),
-            ),
-          ),
+          onTap: () => context.router.push(TaskRoute()),
           child: Container(
             height: 56,
             width: 56,
@@ -101,19 +114,9 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                   showStaticAppBar: showStaticAppBar,
                 ),
-                state is HomeLoading
-                    ? const SliverToBoxAdapter(
-                        child: SizedBox(
-                          height: 200,
-                          width: 100,
-                          child: Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        ),
-                      )
-                    : _TodoList(
-                        showCompleted: showCompleted,
-                      ),
+                _TodoList(
+                  showCompleted: showCompleted,
+                ),
                 const SliverToBoxAdapter(
                   child: SizedBox(height: 16),
                 ),
