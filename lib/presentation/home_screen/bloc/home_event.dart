@@ -23,12 +23,7 @@ final class GetTaskEvent extends HomeEvent {
   GetTaskEvent({required this.id});
 }
 
-final class UpdateTasksEvent extends HomeEvent {
-  final int revision;
-  final List<TodoTaskModel> tasks;
-
-  UpdateTasksEvent({required this.revision, required this.tasks});
-}
+final class UpdateTasksEvent extends HomeEvent {}
 
 final class DeleteTaskEvent extends HomeEvent {
   final TodoTaskModel task;

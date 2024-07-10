@@ -15,36 +15,51 @@ class TasksRepositoryImpl implements TasksRepository {
   @override
   Future<List<TodoTaskModel>> getTasks() async {
     try {
-      final tasks = await remoteDatasource.getTasks();
-      await localDatasource.setRevision(tasks.revision);
-      await localDatasource.setTasks(tasks.list);
-      return tasks.list;
+      final tasks = localDatasource.getTasks();
+      return tasks;
     } catch (e) {
       rethrow;
     }
   }
 
   @override
-  Future<TodoTaskModel> createTask(int revision, TodoTaskModel todoTask) async {
+  Future<List<TodoTaskModel>> createTask(TodoTaskModel todoTask) async {
     try {
-      final task = await remoteDatasource.createTask(
-        localDatasource.getRevision(),
-        todoTask,
-      );
-      return task.element;
+      final localTasks = localDatasource.getTasks();
+      final newTasks = localTasks..add(todoTask);
+      await localDatasource.setTasks(newTasks);
+      remoteDatasource
+          .createTask(
+            localDatasource.getRevision(),
+            todoTask,
+          )
+          .then(
+            (value) => localDatasource.setRevision(value.revision),
+          );
+      return newTasks;
     } catch (e) {
       rethrow;
     }
   }
 
   @override
-  Future<TodoTaskModel> deleteTask(int revision, TodoTaskModel taskModel) async {
+  Future<List<TodoTaskModel>> deleteTask(TodoTaskModel taskModel) async {
     try {
-      final task = await remoteDatasource.deleteTask(
-        localDatasource.getRevision(),
-        taskModel,
-      );
-      return task.element;
+      final localTasks = localDatasource.getTasks();
+      final newTasks = localTasks
+        ..removeWhere(
+          (element) => element.id == taskModel.id,
+        );
+      await localDatasource.setTasks(newTasks);
+      remoteDatasource
+          .deleteTask(
+            localDatasource.getRevision(),
+            taskModel,
+          )
+          .then(
+            (value) => localDatasource.setRevision(value.revision),
+          );
+      return newTasks;
     } catch (e) {
       rethrow;
     }
@@ -64,28 +79,39 @@ class TasksRepositoryImpl implements TasksRepository {
   }
 
   @override
-  Future<TodoTaskModel> editTask(int revision, TodoTaskModel todoTask) async {
+  Future<List<TodoTaskModel>> editTask(TodoTaskModel todoTask) async {
     try {
-      final task = await remoteDatasource.editTask(
-        localDatasource.getRevision(),
-        todoTask,
-      );
-      return task.element;
+      final localTasks = localDatasource.getTasks();
+      final taskIndex = localTasks.indexWhere((element) => element.id == todoTask.id);
+      localTasks.replaceRange(taskIndex, taskIndex + 1, [todoTask]);
+      remoteDatasource
+          .editTask(
+            localDatasource.getRevision(),
+            todoTask,
+          )
+          .then(
+            (value) => localDatasource.setRevision(value.revision),
+          );
+      return localTasks;
     } catch (e) {
       rethrow;
     }
   }
 
   @override
-  Future<List<TodoTaskModel>> updateTasks(int revision, List<TodoTaskModel> tasks) async {
+  Future<void> updateTasks() async {
     try {
-      final updatedTasks = await remoteDatasource.updateTasks(
+      final localTasks = localDatasource.getTasks();
+      remoteDatasource
+          .updateTasks(
         localDatasource.getRevision(),
-        tasks,
+        localTasks,
+      )
+          .then(
+        (value) {
+          localDatasource.setRevision(value.revision);
+        },
       );
-      localDatasource.setRevision(updatedTasks.revision);
-      localDatasource.setTasks(updatedTasks.list);
-      return updatedTasks.list;
     } catch (e) {
       rethrow;
     }

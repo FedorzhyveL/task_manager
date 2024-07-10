@@ -1,3 +1,7 @@
+import 'dart:io';
+
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -14,6 +18,7 @@ import 'package:task_manager/domain/use_cases/edit_task_use_case.dart';
 import 'package:task_manager/domain/use_cases/get_task_use_case.dart';
 import 'package:task_manager/domain/use_cases/get_tasks_use_case.dart';
 import 'package:task_manager/domain/use_cases/update_tasks_use_case.dart';
+import 'package:task_manager/presentation/navigation/app_router.dart';
 
 final injector = GetIt.I;
 
@@ -37,6 +42,24 @@ Future<void> inject() async {
     );
     return RestClient(dio);
   });
+
+  injector.registerSingletonAsync<String>(
+    instanceName: 'deviceId',
+    () async {
+      final deviceInfo = DeviceInfoPlugin();
+      if (Platform.isAndroid) {
+        return (await deviceInfo.androidInfo).id;
+      } else if (Platform.isIOS) {
+        return (await deviceInfo.iosInfo).identifierForVendor ?? '1';
+      } else {
+        return '1';
+      }
+    },
+  );
+
+  injector.registerLazySingleton<Connectivity>(() => Connectivity());
+
+  injector.registerLazySingleton<AppRouter>(() => AppRouter());
 
   await _registerDatasources();
   _registerRepositories();
