@@ -47,6 +47,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     try {
       final tasks = await _getTasksUseCase(null);
       emit(HomeLoaded(tasks: tasks));
+      add(UpdateTasksEvent());
     } catch (e) {
       logger.e(e);
     }
@@ -81,7 +82,9 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
   Future<void> _updateTasks(Emitter<HomeState> emit) async {
     try {
-      _updateTasksUseCase(null);
+      if (state is HomeLoaded) {
+        _updateTasksUseCase(null);
+      }
     } catch (e) {
       logger.e(e);
     }

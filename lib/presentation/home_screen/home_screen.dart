@@ -30,7 +30,6 @@ class _HomeScreenState extends State<HomeScreen> {
   bool showStaticAppBar = false;
   late final HomeBloc _homeBloc;
   late final Connectivity connectivity;
-  late final ValueNotifier<bool> hasConnection;
 
   @override
   void initState() {
@@ -51,7 +50,6 @@ class _HomeScreenState extends State<HomeScreen> {
     _homeBloc = context.read<HomeBloc>();
 
     connectivity = injector.get<Connectivity>();
-    hasConnection = ValueNotifier(false);
     connectivity.onConnectivityChanged.listen(
       (connectivityEvent) {
         if (connectivityEvent.contains(ConnectivityResult.ethernet) ||
@@ -86,7 +84,6 @@ class _HomeScreenState extends State<HomeScreen> {
         backgroundColor: const Color(0xFFF7F6F2),
         floatingActionButton: InkWell(
           onTap: () => context.router.push(TaskRoute()),
-          // onTap: () => context.go('/task'),
           child: Container(
             height: 56,
             width: 56,

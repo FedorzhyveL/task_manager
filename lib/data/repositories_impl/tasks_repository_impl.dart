@@ -15,7 +15,11 @@ class TasksRepositoryImpl implements TasksRepository {
   @override
   Future<List<TodoTaskModel>> getTasks() async {
     try {
-      final tasks = localDatasource.getTasks();
+      List<TodoTaskModel> tasks = localDatasource.getTasks();
+      if (tasks.isEmpty) {
+        tasks = (await remoteDatasource.getTasks()).list;
+        if (tasks.isNotEmpty) await localDatasource.setTasks(tasks);
+      }
       return tasks;
     } catch (e) {
       rethrow;
