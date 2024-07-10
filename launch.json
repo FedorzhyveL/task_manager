@@ -1,0 +1,13 @@
+{
+    "configurations": [
+	    {
+            "name": "Flutter",
+            "request": "launch",
+            "type": "dart",
+            "toolArgs": [
+                "--dart-define",
+                "API_TOKEN=MY_API_TOKEN"
+            ]
+	    }
+    ]
+}

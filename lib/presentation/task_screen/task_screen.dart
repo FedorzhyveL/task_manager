@@ -1,18 +1,24 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
-import 'package:task_manager/data/models/todo_task_model.dart';
 
-part 'widgets/text_field.dart';
+import 'package:task_manager/domain/models/todo_task_model.dart';
+import 'package:task_manager/presentation/home_screen/bloc/home_bloc.dart';
+
 part 'widgets/date_picker.dart';
 part 'widgets/delete_module.dart';
 part 'widgets/priority_selection.dart';
+part 'widgets/text_field.dart';
 
 class TaskScreen extends StatefulWidget {
   const TaskScreen({
     super.key,
     this.todoTask,
+    required this.homeBloc,
   });
   final TodoTaskModel? todoTask;
+  final HomeBloc homeBloc;
   @override
   State<TaskScreen> createState() => _TaskScreenState();
 }
@@ -29,10 +35,10 @@ class _TaskScreenState extends State<TaskScreen> {
   void initState() {
     super.initState();
     if (widget.todoTask != null) {
-      textEditingController.value = TextEditingValue(text: widget.todoTask!.taskInfo);
-      dropdownValue = widget.todoTask!.taskPriority.toString();
-      switchValue = widget.todoTask!.taskDeadline != null;
-      taskDeadline = widget.todoTask!.taskDeadline;
+      textEditingController.value = TextEditingValue(text: widget.todoTask!.text);
+      dropdownValue = widget.todoTask!.importance.toString();
+      switchValue = widget.todoTask!.deadline != null;
+      taskDeadline = widget.todoTask!.deadline;
     }
   }
 
@@ -51,10 +57,33 @@ class _TaskScreenState extends State<TaskScreen> {
         ),
         actions: [
           TextButton(
-            onPressed: () {},
-            child: const Text(
-              'СОХРАНИТЬ',
-              style: TextStyle(
+            onPressed: widget.homeBloc.state is! HomeLoading
+                ? widget.todoTask == null
+                    ? () {
+                        widget.homeBloc.add(
+                          CreateTaskEvent(
+                            text: textEditingController.text,
+                            importance: Importance.fromString(dropdownValue),
+                            deadline: taskDeadline,
+                          ),
+                        );
+                      }
+                    : () {
+                        widget.homeBloc.add(
+                          EditTaskEvent(
+                            task: widget.todoTask!.copyWith(
+                              text: textEditingController.text,
+                              importance: Importance.fromString(dropdownValue),
+                              deadline: taskDeadline,
+                              changeDeadline: true,
+                            ),
+                          ),
+                        );
+                      }
+                : null,
+            child: Text(
+              AppLocalizations.of(context)!.saveTask,
+              style: const TextStyle(
                 fontSize: 14,
                 fontWeight: FontWeight.w500,
                 height: 1.71,
@@ -66,59 +95,71 @@ class _TaskScreenState extends State<TaskScreen> {
           ),
         ],
       ),
-      body: ListView(
-        children: [
-          const SizedBox(height: 8),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              _TodoTaskTextField(
-                textEditingController: textEditingController,
-              ),
-              const SizedBox(height: 12),
-              _PrioritySelection(
-                dropdownValue: dropdownValue,
-                onChanged: (value) => setState(
-                  () {
-                    dropdownValue = value;
-                  },
+      body: BlocConsumer(
+        bloc: widget.homeBloc,
+        listenWhen: (previous, current) => previous is HomeLoading && current is HomeLoaded,
+        listener: (context, state) => Navigator.of(context).pop(),
+        builder: (context, state) => ListView(
+          children: [
+            const SizedBox(height: 8),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _TodoTaskTextField(
+                  textEditingController: textEditingController,
                 ),
-              ),
-              const SizedBox(height: 16),
-              Divider(
-                height: 0.5,
-                indent: 16,
-                endIndent: 16,
-                color: Colors.black.withOpacity(0.2),
-              ),
-              const SizedBox(height: 16),
-              _TodoDatePicker(
-                taskDeadline: taskDeadline,
-                switchValue: switchValue,
-                onDateSelected: (datePickerValue, value) => setState(
-                  () {
-                    taskDeadline = datePickerValue;
-                    switchValue = value;
-                  },
+                const SizedBox(height: 12),
+                _PrioritySelection(
+                  dropdownValue: dropdownValue,
+                  onChanged: (value) => setState(
+                    () {
+                      dropdownValue = value;
+                    },
+                  ),
                 ),
-                onDateRemoved: (value) => setState(
-                  () {
-                    taskDeadline = null;
-                    switchValue = value;
-                  },
+                const SizedBox(height: 16),
+                Divider(
+                  height: 0.5,
+                  indent: 16,
+                  endIndent: 16,
+                  color: Colors.black.withOpacity(0.2),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 16),
-          Divider(
-            indent: 0,
-            height: 0.5,
-            color: Colors.black.withOpacity(0.2),
-          ),
-          const SizedBox(height: 16),
-          _DeleteModule(isEditMode: widget.todoTask == null),
-        ],
+                const SizedBox(height: 16),
+                _TodoDatePicker(
+                  taskDeadline: taskDeadline,
+                  switchValue: switchValue,
+                  onDateSelected: (datePickerValue, value) => setState(
+                    () {
+                      taskDeadline = datePickerValue;
+                      switchValue = value;
+                    },
+                  ),
+                  onDateRemoved: (value) => setState(
+                    () {
+                      taskDeadline = null;
+                      switchValue = value;
+                    },
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 16),
+            Divider(
+              indent: 0,
+              height: 0.5,
+              color: Colors.black.withOpacity(0.2),
+            ),
+            const SizedBox(height: 16),
+            _DeleteModule(
+              isEditMode: widget.todoTask == null,
+              onDelete: widget.todoTask != null
+                  ? () => widget.homeBloc.add(
+                        DeleteTaskEvent(task: widget.todoTask!),
+                      )
+                  : null,
+            ),
+          ],
+        ),
       ),
     );
   }

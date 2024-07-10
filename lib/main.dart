@@ -1,19 +1,26 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:intl/intl.dart';
 import 'package:logger/logger.dart';
+
+import 'package:task_manager/core/di.dart';
 import 'package:task_manager/presentation/home_screen/home_screen.dart';
 
 final logger = Logger(
   printer: PrettyPrinter(),
   filter: null,
 );
-void main() {
+
+Future<void> main() async {
   Intl.defaultLocale = 'ru';
   runZonedGuarded(
-    () => runApp(const MainApp()),
+    () async {
+      WidgetsFlutterBinding.ensureInitialized();
+      await inject();
+      runApp(const MainApp());
+    },
     (error, stack) {},
   );
 }
@@ -24,12 +31,8 @@ class MainApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const MaterialApp(
-      localizationsDelegates: [
-        GlobalMaterialLocalizations.delegate,
-        GlobalWidgetsLocalizations.delegate,
-        GlobalCupertinoLocalizations.delegate,
-      ],
-      supportedLocales: [Locale('ru')],
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
       debugShowCheckedModeBanner: false,
       color: Color(0xFFF7F6F2),
       home: HomeScreen(),

@@ -3,8 +3,10 @@ part of '../task_screen.dart';
 class _DeleteModule extends StatelessWidget {
   const _DeleteModule({
     this.isEditMode = false,
+    required this.onDelete,
   });
   final bool isEditMode;
+  final void Function()? onDelete;
 
   @override
   Widget build(BuildContext context) {
@@ -13,7 +15,7 @@ class _DeleteModule extends StatelessWidget {
       child: Row(
         children: [
           InkWell(
-            onTap: () {},
+            onTap: onDelete,
             child: Icon(
               Icons.delete_rounded,
               color: isEditMode ? Colors.black.withOpacity(0.15) : const Color.fromRGBO(255, 59, 48, 1),
@@ -21,7 +23,7 @@ class _DeleteModule extends StatelessWidget {
           ),
           const SizedBox(width: 20),
           Text(
-            'Удалить',
+            AppLocalizations.of(context)!.delete,
             style: TextStyle(
               color: isEditMode ? Colors.black.withOpacity(0.15) : const Color.fromRGBO(255, 59, 48, 1),
               fontWeight: FontWeight.w400,

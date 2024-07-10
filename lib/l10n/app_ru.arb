@@ -1,0 +1,19 @@
+{
+    "myTasks":"Мои дела",
+    "completedTasks":"Выполненно — {count}",
+    "@completedTasks":{
+        "placeholder":{
+            "count":{
+                "type":"int"
+            }
+        }
+    },
+    "newTask":"Новое",
+    "saveTask":"СОХРАНИТЬ",
+    "chooseDeadline":"Сделать до",
+    "delete":"Удалить",
+    "priority":"Важность",
+    "lowPriority":"Нет",
+    "basicPriority":"Низкий",
+    "importantPriority":"!! Высокий"
+}
