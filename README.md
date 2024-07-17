@@ -58,6 +58,44 @@ State-Management
 
 APK (Alan Turing) [https://drive.google.com/file/d/1S8yVY3AzZXHQN0epM3uQdmP3ztKY3Afh/view?usp=sharing](https://drive.google.com/file/d/12lymWyxAfR4XduOswWI4Eew6Qcl0I6SJ/view?usp=sharing)
 
+
+Четвёртая часть работы Linus Torvalds
+
+**Навигация, UI, animations (max 8 баллов)**
+- [x] Навигация инкапсулирована в отдельной сущности, отсутствуют явные переходы Navigator.push прямо в колбеках (+1 балл)
+- [x] Текст длинных заметок обрезается по макету (+1 балл)
+- [x] Поддержка ночной темы (+1 балл)
+- [x] Реализованы анимации для добавления/исчезновения/редактирования и прочих взаимодействий с заметками (+1 балл)
+- [x] Реализована поддержка лендскейп-ориентации (+2 балла) (меняется максимальная высота апп бара)
+- [x] Реализована поддержка больших экранов (планшеты) (+2 балла) (добавлена проверка на размер экрана, если меньшая сторона >= 600, то на главном экране боковые отступы будут больше)
+
+**Firebase (max 3 балла)**
+- [x] Реализована работа с Remote Configs, работает рантайм-переключение цвета важности (дефолтный красный по Фигме vs #793cd8) (+2 балла)
+- [x] К проекту подключён и настроен Firebase Crashlytics, репортинг ошибок работает (+1 балл)
+
+**Build & Release (max 8 баллов)**
+- [x] Поддержаны 2 флейвора: для сборки тестинг и прод окружения. Различие реализовать визуально: наличием шильдика DEV в правом верхнем углу главного экрана, либо разными иконками приложения, либо разными названиями приложения после установки (например, на иконке может быть шильдик DEV, в названии может быть префикс [dev]). - [x] Про флейворы можно почитать тут, особенное внимание уделить статье про dart-defines, с ними удобнее. (+2 балла)
+- [x] Настроен CI на GitHub (+1 балл за каждый шаг (форматирование, линтер, тесты, сборка, деплой) — до +4 баллов в сумме)
+- [x] Есть распространение через какой-то сервис вроде Firebase App Distribution (+2 балла)
+
+**Разное (max 2 балла)**
+- [x] Добавлен инструмент для аналитики: Firebase/AppMetrica. Собирается аналитика по событиям: добавление, удаление, выполнение, переходы по экранам (+1 балл)
+- [x] Для дата-моделей используется пакет freezed (+1 балл)
+
+Флейворы поддерживаются через --dart-define и CI
+
+Ссылка-инвайт firebase-app-7destribution: https://appdistribution.firebase.dev/i/575e256278844953
+
+Скрины проделанной работы:
+![image](https://github.com/user-attachments/assets/2770a6ad-393b-4527-8a69-36533ab064f1)
+![image](https://github.com/user-attachments/assets/44ed658b-d1be-466b-b1d8-2aade6331b97)
+![image](https://github.com/user-attachments/assets/283ca7fa-52d7-4b4c-b878-50a33488e956)
+![image](https://github.com/user-attachments/assets/f5058b50-88c5-41d4-b9c3-aac10c5b0943)
+![image](https://github.com/user-attachments/assets/f9173141-d541-417c-8993-96c793a51bb1)
+
+
+
+
 ![image](https://github.com/FedorzhyveL/task_manager/assets/61901905/f62f5e37-fc48-4b50-bdad-0ba0cd0dcf37)
 ![image](https://github.com/FedorzhyveL/task_manager/assets/61901905/7909602b-b0cd-4161-80cc-9b4cda285c5c)
 ![image](https://github.com/FedorzhyveL/task_manager/assets/61901905/303bba19-c2a9-4916-bbe4-c64b7a009fff)
