@@ -50,7 +50,8 @@ class TodoTaskModel {
     required this.lastUpdatedBy,
   });
 
-  factory TodoTaskModel.fromJson(Map<String, dynamic> json) => _$TodoTaskModelFromJson(json);
+  factory TodoTaskModel.fromJson(Map<String, dynamic> json) =>
+      _$TodoTaskModelFromJson(json);
 
   Map<String, dynamic> toJson() => _$TodoTaskModelToJson(this);
 
@@ -88,7 +89,8 @@ class NullableEpochDateTimeConverter implements JsonConverter<DateTime?, int?> {
   const NullableEpochDateTimeConverter();
 
   @override
-  DateTime? fromJson(int? json) => json == null ? null : DateTime.fromMillisecondsSinceEpoch(json);
+  DateTime? fromJson(int? json) =>
+      json == null ? null : DateTime.fromMillisecondsSinceEpoch(json);
 
   @override
   int? toJson(DateTime? object) => object?.millisecondsSinceEpoch;

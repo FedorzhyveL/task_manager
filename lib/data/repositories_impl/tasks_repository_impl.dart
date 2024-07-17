@@ -86,8 +86,10 @@ class TasksRepositoryImpl implements TasksRepository {
   Future<List<TodoTaskModel>> editTask(TodoTaskModel todoTask) async {
     try {
       final localTasks = localDatasource.getTasks();
-      final taskIndex = localTasks.indexWhere((element) => element.id == todoTask.id);
+      final taskIndex =
+          localTasks.indexWhere((element) => element.id == todoTask.id);
       localTasks.replaceRange(taskIndex, taskIndex + 1, [todoTask]);
+      await localDatasource.setTasks(localTasks);
       remoteDatasource
           .editTask(
             localDatasource.getRevision(),

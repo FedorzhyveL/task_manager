@@ -31,7 +31,8 @@ void main() {
       (invocation) async {
         return TaskDto(
           status: 'OK',
-          element: TodoTaskModel.fromJson(invocation.positionalArguments.last['element']),
+          element: TodoTaskModel.fromJson(
+              invocation.positionalArguments.last['element']),
           revision: invocation.positionalArguments.first + 1,
         );
       },
@@ -41,7 +42,9 @@ void main() {
   });
 
   group('LocalDatasource', () {
-    test('и его метод setRevision должен записать ревизию в локальное хранилище', () async {
+    test(
+        'и его метод setRevision должен записать ревизию в локальное хранилище',
+        () async {
       //  arrange
       const currentRevision = 1;
 

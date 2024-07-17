@@ -9,7 +9,8 @@ class _TodoDatePicker extends StatelessWidget {
   });
   final DateTime? taskDeadline;
   final bool switchValue;
-  final void Function(DateTime datePickerValue, bool switchValue) onDateSelected;
+  final void Function(DateTime datePickerValue, bool switchValue)
+      onDateSelected;
   final void Function(bool switchValue) onDateRemoved;
 
   @override
@@ -47,12 +48,6 @@ class _TodoDatePicker extends StatelessWidget {
               fit: BoxFit.fill,
               child: Switch(
                 value: switchValue,
-                inactiveThumbColor: Colors.white,
-                activeColor: const Color.fromARGB(255, 0, 122, 255),
-                inactiveTrackColor: const Color.fromRGBO(0, 0, 0, 0.06),
-                trackOutlineColor: WidgetStateProperty.resolveWith(
-                  (states) => const Color(0xFFF7F6F2),
-                ),
                 onChanged: (value) async {
                   switch (value) {
                     case true:

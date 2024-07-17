@@ -23,7 +23,8 @@ void main() {
     );
   });
   group('TaskRepository', () {
-    test('и его метод getTasks должен вернуть List типа TodoTaskModel', () async {
+    test('и его метод getTasks должен вернуть List типа TodoTaskModel',
+        () async {
       //  act
       final tasks = await repository.getTasks();
 

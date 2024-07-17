@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:connectivity_plus/connectivity_plus.dart';
 import 'package:device_info_plus/device_info_plus.dart';
 import 'package:dio/dio.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:get_it/get_it.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:task_manager/core/network/custom_interceptors/base_intercceptor.dart';
@@ -28,7 +30,10 @@ Future<void> inject() async {
       BaseOptions(
         baseUrl: 'https://hive.mrdekk.ru/todo',
         connectTimeout: const Duration(minutes: 1),
-        headers: {'Authorization': 'Bearer ${const String.fromEnvironment('API_TOKEN')}'},
+        headers: {
+          'Authorization':
+              'Bearer ${const String.fromEnvironment('API_TOKEN')}',
+        },
       ),
     );
     dio.interceptors.addAll(
@@ -60,6 +65,24 @@ Future<void> inject() async {
   injector.registerLazySingleton<Connectivity>(() => Connectivity());
 
   injector.registerLazySingleton<AppRouter>(() => AppRouter());
+
+  injector.registerSingletonAsync<FirebaseRemoteConfig>(
+    () async {
+      final remoteConfig = FirebaseRemoteConfig.instance;
+      await remoteConfig.setConfigSettings(
+        RemoteConfigSettings(
+          fetchTimeout: const Duration(seconds: 30),
+          minimumFetchInterval: const Duration(seconds: 30),
+        ),
+      );
+      await remoteConfig.fetchAndActivate();
+      return remoteConfig;
+    },
+  );
+
+  injector.registerLazySingleton<FirebaseAnalytics>(
+    () => FirebaseAnalytics.instance,
+  );
 
   await _registerDatasources();
   _registerRepositories();

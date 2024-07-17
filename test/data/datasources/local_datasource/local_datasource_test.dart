@@ -11,13 +11,17 @@ void main() {
   setUp(() {
     database = SharedPreferencesMok();
 
-    when(() => database.setInt(LocalDatasourceKeys.revisionKey, any(that: isA<int>()))).thenAnswer((_) async => true);
+    when(() => database.setInt(
+            LocalDatasourceKeys.revisionKey, any(that: isA<int>())))
+        .thenAnswer((_) async => true);
 
     localDatasource = LocalDatasource(sharedPreferences: database);
   });
 
   group('LocalDatasource', () {
-    test('и его метод setRevision должен записать ревизию в локальное хранилище', () async {
+    test(
+        'и его метод setRevision должен записать ревизию в локальное хранилище',
+        () async {
       //  arrange
       const expectedRevision = 42;
 

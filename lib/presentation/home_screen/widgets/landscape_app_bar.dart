@@ -1,7 +1,7 @@
 part of '../home_screen.dart';
 
-class _HomeAppBar extends SliverPersistentHeaderDelegate {
-  _HomeAppBar({
+class _LandscapeHomeAppBar extends SliverPersistentHeaderDelegate {
+  _LandscapeHomeAppBar({
     required this.showCompleted,
     required this.onVisibilityChanged,
   });
@@ -23,7 +23,6 @@ class _HomeAppBar extends SliverPersistentHeaderDelegate {
   ) {
     final double visibleMainHeight = max(maxExtent - shrinkOffset, minExtent);
     final double animationVal = scrollAnimationValue(shrinkOffset);
-
     return Container(
       height: visibleMainHeight,
       decoration: BoxDecoration(
@@ -103,7 +102,7 @@ class _HomeAppBar extends SliverPersistentHeaderDelegate {
   }
 
   @override
-  double get maxExtent => 150;
+  double get maxExtent => 90;
 
   @override
   double get minExtent => 65;

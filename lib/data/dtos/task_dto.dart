@@ -1,34 +1,30 @@
-import 'package:json_annotation/json_annotation.dart';
+import 'package:freezed_annotation/freezed_annotation.dart';
+
 import 'package:task_manager/domain/models/todo_task_model.dart';
 
+part 'task_dto.freezed.dart';
 part 'task_dto.g.dart';
 
-@JsonSerializable(createToJson: false)
-class TaskDto {
-  final String status;
-  final TodoTaskModel element;
-  final int revision;
+@Freezed(toJson: false)
+class TaskDto with _$TaskDto {
+  const factory TaskDto({
+    required String status,
+    required TodoTaskModel element,
+    required int revision,
+  }) = _TaskDto;
 
-  TaskDto({
-    required this.status,
-    required this.element,
-    required this.revision,
-  });
-
-  factory TaskDto.fromJson(Map<String, dynamic> json) => _$TaskDtoFromJson(json);
+  factory TaskDto.fromJson(Map<String, dynamic> json) =>
+      _$TaskDtoFromJson(json);
 }
 
-@JsonSerializable(createToJson: false)
-class TasksDto {
-  final String status;
-  final List<TodoTaskModel> list;
-  final int revision;
+@Freezed(toJson: false)
+class TasksDto with _$TasksDto {
+  const factory TasksDto({
+    required String status,
+    required List<TodoTaskModel> list,
+    required int revision,
+  }) = _TasksDto;
 
-  TasksDto({
-    required this.status,
-    required this.list,
-    required this.revision,
-  });
-
-  factory TasksDto.fromJson(Map<String, dynamic> json) => _$TasksDtoFromJson(json);
+  factory TasksDto.fromJson(Map<String, dynamic> json) =>
+      _$TasksDtoFromJson(json);
 }

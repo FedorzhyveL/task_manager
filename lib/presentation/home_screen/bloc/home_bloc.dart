@@ -1,4 +1,5 @@
 import 'package:bloc/bloc.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:meta/meta.dart';
 import 'package:uuid/uuid.dart';
 
@@ -61,7 +62,8 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Future<void> _createTask(Emitter<HomeState> emit, CreateTaskEvent event) async {
+  Future<void> _createTask(
+      Emitter<HomeState> emit, CreateTaskEvent event) async {
     try {
       final tasks = await _createTaskUseCase(
         TodoTaskModel(
@@ -74,6 +76,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           lastUpdatedBy: injector.get(instanceName: 'deviceId'),
         ),
       );
+      injector.get<FirebaseAnalytics>().logEvent(name: 'new_task_created');
       emit(HomeLoaded(tasks: tasks));
     } catch (e) {
       logger.e(e);
@@ -90,9 +93,16 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     }
   }
 
-  Future<void> _deleteTask(Emitter<HomeState> emit, DeleteTaskEvent event) async {
+  Future<void> _deleteTask(
+      Emitter<HomeState> emit, DeleteTaskEvent event) async {
     try {
       final tasks = await _deleteTaskUseCase(event.task);
+      injector.get<FirebaseAnalytics>().logEvent(
+        name: 'task_deleted',
+        parameters: {
+          'task': event.task,
+        },
+      );
       emit(HomeLoaded(tasks: tasks));
     } catch (e) {
       logger.e(e);
@@ -102,6 +112,12 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
   Future<void> _editTask(Emitter<HomeState> emit, EditTaskEvent event) async {
     try {
       final tasks = await _editTaskUseCase(event.task);
+      injector.get<FirebaseAnalytics>().logEvent(
+        name: 'task_edited',
+        parameters: {
+          'task': event.task,
+        },
+      );
       emit(HomeLoaded(tasks: tasks));
     } catch (e) {
       logger.e(e);
