@@ -86,6 +86,10 @@ APK (Alan Turing) [https://drive.google.com/file/d/1S8yVY3AzZXHQN0epM3uQdmP3ztKY
 
 Ссылка-инвайт firebase-app-7destribution: https://appdistribution.firebase.dev/i/575e256278844953
 
+Ссылки на apk:
+https://drive.google.com/file/d/1rfLe77e4AqXslS-JJ6u2BfZ8vIMjxbOd/view?usp=sharing
+https://appdistribution.firebase.google.com/testerapps/1:443444932965:android:e99d4413175e06fbdaf18c/releases/7ipc9gbshno40?utm_source=firebase-console
+
 Скрины проделанной работы:
 ![image](https://github.com/user-attachments/assets/2770a6ad-393b-4527-8a69-36533ab064f1)
 ![image](https://github.com/user-attachments/assets/44ed658b-d1be-466b-b1d8-2aade6331b97)
