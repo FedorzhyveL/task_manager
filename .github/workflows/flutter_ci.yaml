@@ -5,9 +5,9 @@ jobs:
   analyze:
     runs-on: ubuntu-latest
     steps: 
-      - uses: action/checkout@v4
+      - uses: action/checkout@v2
         with:
-          repository: FedorzhyveL/task_manager
+          repository: https://github.com/FedorzhyveL/task_manager
       - uses: subosito/flutter-action@v1
         with:
           channel: 'stable'
