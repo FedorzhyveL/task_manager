@@ -52,8 +52,7 @@ jobs:
           channel: 'stable'
       - run: flutter pub get
       - run: dart run build_runner build --delete-conflicting-outputs
-      - name: build release 
-        run: ./gradlew assembleRelease
+      - run: flutter build apk --dart-define=API_KEY={$env:API_KEY} --dart-define=STEND={$env:STEND}
       - name: upload artifact to Firebase App Distribution
         uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
