@@ -10,17 +10,17 @@ class _TodoTaskTextField extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Container(
         decoration: BoxDecoration(
-          color: const Color(0xFFF7F6F2),
+          color: Theme.of(context).cardColor,
           borderRadius: BorderRadius.circular(8),
-          boxShadow: [
+          boxShadow: const [
             BoxShadow(
-              offset: const Offset(0, 2),
+              offset: Offset(0, 2),
               blurRadius: 2,
-              color: Colors.black.withOpacity(0.12),
+              color: Palette.shadowColor1,
             ),
             BoxShadow(
               blurRadius: 2,
-              color: Colors.black.withOpacity(0.06),
+              color: Palette.shadowColor2,
             ),
           ],
         ),
@@ -29,7 +29,6 @@ class _TodoTaskTextField extends StatelessWidget {
           minLines: 4,
           maxLines: 100,
           decoration: InputDecoration(
-            fillColor: Colors.white,
             contentPadding: const EdgeInsets.all(16),
             border: InputBorder.none,
             hintText: 'Что надо сделать...',
@@ -37,7 +36,9 @@ class _TodoTaskTextField extends StatelessWidget {
               fontWeight: FontWeight.w400,
               fontSize: 16,
               height: 1.125,
-              color: Colors.black.withOpacity(0.3),
+              color: context.isDarkMode
+                  ? DarkPalette.labelTertiary
+                  : LightPalette.labelTertiary,
             ),
           ),
         ),

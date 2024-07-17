@@ -1,3 +1,9 @@
+import 'dart:math';
+
+import 'package:auto_route/auto_route.dart';
+import 'package:connectivity_plus/connectivity_plus.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -5,20 +11,19 @@ import 'package:intl/intl.dart';
 
 import 'package:task_manager/core/di.dart';
 import 'package:task_manager/domain/models/todo_task_model.dart';
-import 'package:task_manager/domain/use_cases/create_task_use_case.dart';
-import 'package:task_manager/domain/use_cases/delete_task_use_caase.dart';
-import 'package:task_manager/domain/use_cases/edit_task_use_case.dart';
-import 'package:task_manager/domain/use_cases/get_task_use_case.dart';
-import 'package:task_manager/domain/use_cases/get_tasks_use_case.dart';
-import 'package:task_manager/domain/use_cases/update_tasks_use_case.dart';
 import 'package:task_manager/main.dart';
 import 'package:task_manager/presentation/home_screen/bloc/home_bloc.dart';
-import 'package:task_manager/presentation/task_screen/task_screen.dart';
+import 'package:task_manager/presentation/navigation/app_router.dart';
+import 'package:task_manager/presentation/utils/palette.dart';
+import 'package:task_manager/utils/extensions/color_extension.dart';
+import 'package:task_manager/utils/extensions/context_extension.dart';
 
 part 'widgets/app_bar.dart';
+part 'widgets/landscape_app_bar.dart';
 part 'widgets/todo_item.dart';
 part 'widgets/todo_list.dart';
 
+@RoutePage()
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
 
@@ -32,29 +37,55 @@ class _HomeScreenState extends State<HomeScreen> {
   final _scrollController = ScrollController();
   bool showStaticAppBar = false;
   late final HomeBloc _homeBloc;
+  late final Connectivity connectivity;
 
   @override
   void initState() {
     super.initState();
-    _homeBloc = HomeBloc(
-      injector.get<GetTasksUseCase>(),
-      injector.get<GetTaskUseCase>(),
-      injector.get<UpdateTasksUseCase>(),
-      injector.get<CreateTaskUseCase>(),
-      injector.get<EditTaskUseCase>(),
-      injector.get<DeleteTaskUseCase>(),
-    );
+    injector.get<FirebaseAnalytics>().logEvent(name: 'home_page_opened');
+
     _scrollController.addListener(() {
-      if (_scrollController.offset >= (15 + kToolbarHeight) && showStaticAppBar == false) {
+      if (_scrollController.offset >= (15 + kToolbarHeight) &&
+          showStaticAppBar == false) {
         setState(() {
           showStaticAppBar = true;
         });
-      } else if (_scrollController.offset < (15 + kToolbarHeight) && showStaticAppBar == true) {
+      } else if (_scrollController.offset < (15 + kToolbarHeight) &&
+          showStaticAppBar == true) {
         setState(() {
           showStaticAppBar = false;
         });
       }
     });
+
+    _homeBloc = context.read<HomeBloc>();
+
+    connectivity = injector.get<Connectivity>();
+    connectivity.onConnectivityChanged.listen(
+      (connectivityEvent) {
+        final hasConnection =
+            connectivityEvent.contains(ConnectivityResult.ethernet) ||
+                connectivityEvent.contains(ConnectivityResult.wifi) ||
+                connectivityEvent.contains(ConnectivityResult.mobile);
+        final message = hasConnection
+            ? 'Интернет соединение установлено'
+            : 'Интернет соединение не установлено';
+        if (hasConnection) _homeBloc.add(UpdateTasksEvent());
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+            content: Text(
+              message,
+              style: TextStyle(
+                color: context.isDarkMode
+                    ? DarkPalette.labelPrimary
+                    : LightPalette.labelPrimary,
+              ),
+            ),
+          ),
+        );
+      },
+    );
   }
 
   @override
@@ -62,62 +93,53 @@ class _HomeScreenState extends State<HomeScreen> {
     return BlocProvider(
       create: (BuildContext context) => _homeBloc,
       child: Scaffold(
-        backgroundColor: const Color(0xFFF7F6F2),
-        floatingActionButton: InkWell(
-          onTap: () => Navigator.of(context).push<Map<String, dynamic>?>(
-            MaterialPageRoute(
-              builder: (context) => TaskScreen(
-                homeBloc: _homeBloc,
-              ),
-            ),
-          ),
-          child: Container(
-            height: 56,
-            width: 56,
-            decoration: const BoxDecoration(
-              color: Color(0xff007aff),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.add_rounded,
-              color: Colors.white,
-              size: 24,
-            ),
+        floatingActionButton: FloatingActionButton(
+          onPressed: () => context.router.push(TaskRoute()),
+          child: const Icon(
+            Icons.add_rounded,
+            size: 24,
           ),
         ),
         body: BlocBuilder<HomeBloc, HomeState>(
           builder: (context, state) {
-            return CustomScrollView(
-              controller: _scrollController,
-              physics: const BouncingScrollPhysics(),
-              slivers: [
-                _HomeAppBar(
-                  doneTasksAmount: (showCompleted ? state.doneTasks : state.tasks).length,
-                  showCompleted: showCompleted,
-                  onVisibilityChanged: () => setState(
-                    () {
-                      showCompleted = !showCompleted;
-                    },
-                  ),
-                  showStaticAppBar: showStaticAppBar,
-                ),
-                state is HomeLoading
-                    ? const SliverToBoxAdapter(
-                        child: SizedBox(
-                          height: 200,
-                          width: 100,
-                          child: Center(
-                            child: CircularProgressIndicator(),
-                          ),
-                        ),
-                      )
-                    : _TodoList(
+            return SafeArea(
+              child: CustomScrollView(
+                controller: _scrollController,
+                physics: const BouncingScrollPhysics(),
+                slivers: [
+                  if (MediaQuery.orientationOf(context) ==
+                      Orientation.landscape)
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _LandscapeHomeAppBar(
                         showCompleted: showCompleted,
+                        onVisibilityChanged: () => setState(
+                          () {
+                            showCompleted = !showCompleted;
+                          },
+                        ),
                       ),
-                const SliverToBoxAdapter(
-                  child: SizedBox(height: 16),
-                ),
-              ],
+                    ),
+                  if (MediaQuery.orientationOf(context) == Orientation.portrait)
+                    SliverPersistentHeader(
+                      pinned: true,
+                      delegate: _HomeAppBar(
+                        showCompleted: showCompleted,
+                        onVisibilityChanged: () => setState(
+                          () {
+                            showCompleted = !showCompleted;
+                          },
+                        ),
+                      ),
+                    ),
+                  _TodoList(
+                    showCompleted: showCompleted,
+                  ),
+                  const SliverToBoxAdapter(
+                    child: SizedBox(height: 16),
+                  ),
+                ],
+              ),
             );
           },
         ),

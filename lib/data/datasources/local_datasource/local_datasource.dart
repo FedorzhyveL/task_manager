@@ -16,7 +16,8 @@ class LocalDatasource {
   }
 
   Future<bool> setRevision(int revision) async {
-    return await _sharedPreferences.setInt(LocalDatasourceKeys.revisionKey, revision);
+    return await _sharedPreferences.setInt(
+        LocalDatasourceKeys.revisionKey, revision);
   }
 
   List<TodoTaskModel> getTasks() {

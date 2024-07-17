@@ -18,14 +18,26 @@ class _DeleteModule extends StatelessWidget {
             onTap: onDelete,
             child: Icon(
               Icons.delete_rounded,
-              color: isEditMode ? Colors.black.withOpacity(0.15) : const Color.fromRGBO(255, 59, 48, 1),
+              color: isEditMode
+                  ? context.isDarkMode
+                      ? DarkPalette.labelDisable
+                      : LightPalette.labelDisable
+                  : context.isDarkMode
+                      ? DarkPalette.red
+                      : LightPalette.red,
             ),
           ),
           const SizedBox(width: 20),
           Text(
             AppLocalizations.of(context)!.delete,
             style: TextStyle(
-              color: isEditMode ? Colors.black.withOpacity(0.15) : const Color.fromRGBO(255, 59, 48, 1),
+              color: isEditMode
+                  ? context.isDarkMode
+                      ? DarkPalette.labelDisable
+                      : LightPalette.labelDisable
+                  : context.isDarkMode
+                      ? DarkPalette.red
+                      : LightPalette.red,
               fontWeight: FontWeight.w400,
               fontSize: 16,
               height: 1.25,

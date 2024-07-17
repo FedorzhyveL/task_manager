@@ -10,20 +10,20 @@ class _ToDoListItem extends StatelessWidget {
       key: UniqueKey(),
       background: Container(
         padding: const EdgeInsets.only(left: 20),
-        color: const Color.fromRGBO(52, 199, 80, 1),
+        color: context.isDarkMode ? DarkPalette.green : LightPalette.green,
         alignment: Alignment.centerLeft,
         child: const Icon(
           Icons.check_rounded,
-          color: Colors.white,
+          color: LightPalette.white,
         ),
       ),
       secondaryBackground: Container(
         padding: const EdgeInsets.only(right: 20),
-        color: const Color.fromRGBO(255, 59, 48, 1),
+        color: context.isDarkMode ? DarkPalette.red : LightPalette.red,
         alignment: Alignment.centerRight,
         child: const Icon(
           Icons.delete_rounded,
-          color: Colors.white,
+          color: LightPalette.white,
         ),
       ),
       onDismissed: (direction) {
@@ -43,7 +43,8 @@ class _ToDoListItem extends StatelessWidget {
           logger.i('task deleted');
         }
       },
-      child: Padding(
+      child: Container(
+        color: Theme.of(context).cardColor,
         padding: const EdgeInsets.symmetric(
           horizontal: 16,
           vertical: 12,
@@ -73,18 +74,15 @@ class _CheckBox extends StatelessWidget {
       width: 24,
       height: 24,
       child: Checkbox(
-        fillColor: todoTask.importance == Importance.important
-            ? WidgetStateProperty.resolveWith(
-                (states) => states.contains(WidgetState.selected)
-                    ? const Color.fromRGBO(244, 67, 54, 1)
-                    : const Color.fromRGBO(244, 67, 54, 0.16),
-              )
-            : WidgetStateProperty.resolveWith(
-                (states) => states.contains(WidgetState.selected) ? const Color.fromRGBO(52, 199, 89, 1) : null,
-              ),
         side: BorderSide(
           width: 2,
-          color: todoTask.importance == Importance.important ? Colors.red : const Color.fromRGBO(0, 0, 0, 0.2),
+          color: todoTask.importance == Importance.important
+              ? context.isDarkMode
+                  ? DarkPalette.red
+                  : LightPalette.red
+              : context.isDarkMode
+                  ? DarkPalette.supportSeparator
+                  : LightPalette.supportSeparator,
         ),
         value: todoTask.done,
         onChanged: (value) {
@@ -100,8 +98,12 @@ class _CheckBox extends StatelessWidget {
 }
 
 class _TodoItemInfo extends StatelessWidget {
-  const _TodoItemInfo(this.todoTask);
+  _TodoItemInfo(this.todoTask);
   final TodoTaskModel todoTask;
+
+  final remoteConfigColor = injector.get<FirebaseRemoteConfig>().getString(
+        'major_importance_color',
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -113,30 +115,43 @@ class _TodoItemInfo extends StatelessWidget {
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
             text: TextSpan(
-              style: const TextStyle(
+              style: TextStyle(
                 fontSize: 16,
                 fontWeight: FontWeight.w400,
                 height: 1.25,
-                color: Colors.black,
+                color: context.isDarkMode
+                    ? DarkPalette.labelPrimary
+                    : LightPalette.labelPrimary,
               ),
               children: [
                 if (todoTask.importance == Importance.important)
-                  const WidgetSpan(
+                  WidgetSpan(
                     child: Icon(
                       Icons.priority_high_rounded,
-                      color: Color.fromRGBO(255, 59, 48, 1),
+                      color: remoteConfigColor.isEmpty
+                          ? context.isDarkMode
+                              ? DarkPalette.red
+                              : LightPalette.red
+                          : ColorExtension.fromHex(
+                              remoteConfigColor,
+                            ),
                     ),
                   ),
                 if (todoTask.importance == Importance.basic)
-                  const WidgetSpan(
+                  WidgetSpan(
                     child: Icon(
                       Icons.arrow_downward_rounded,
-                      color: Color.fromRGBO(142, 142, 147, 1),
+                      color: context.isDarkMode
+                          ? DarkPalette.gray
+                          : LightPalette.gray,
                     ),
                   ),
                 TextSpan(
                   text: todoTask.text,
-                  style: TextStyle(decoration: todoTask.done ? TextDecoration.lineThrough : null),
+                  style: TextStyle(
+                    decoration:
+                        todoTask.done ? TextDecoration.lineThrough : null,
+                  ),
                 ),
               ],
             ),
@@ -148,7 +163,6 @@ class _TodoItemInfo extends StatelessWidget {
                 fontWeight: FontWeight.w400,
                 fontSize: 14,
                 height: 1.42,
-                color: Color.fromRGBO(0, 0, 0, 0.3),
               ),
             ),
         ],
@@ -164,17 +178,12 @@ class _TodoInfoButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return InkWell(
-      onTap: () => Navigator.of(context).push(
-        MaterialPageRoute(
-          builder: (newContext) => TaskScreen(
-            homeBloc: context.read<HomeBloc>(),
-            todoTask: todoTask,
-          ),
-        ),
-      ),
+      onTap: () => context.router.push(TaskRoute(todoTask: todoTask)),
       child: Icon(
         Icons.info_outline_rounded,
-        color: Colors.black.withOpacity(0.3),
+        color: context.isDarkMode
+            ? DarkPalette.labelTertiary
+            : LightPalette.labelTertiary,
       ),
     );
   }

@@ -6,7 +6,8 @@
             "type": "dart",
             "toolArgs": [
                 "--dart-define",
-                "API_TOKEN=MY_API_TOKEN"
+                "API_TOKEN=MY_API_TOKEN",
+                "STEND=TEST_OR_PROD"
             ]
 	    }
     ]

@@ -11,6 +11,6 @@ class BaseInterceptor extends Interceptor {
   @override
   Future onError(DioException err, ErrorInterceptorHandler handler) async {
     logger.e(err);
-    super.onError(err, handler);
+    return;
   }
 }
